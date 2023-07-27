@@ -6,6 +6,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootApplication
 public class RestApplication {
@@ -15,11 +17,17 @@ public class RestApplication {
 	}
 
 	@Bean
-	public CommandLineRunner run(UserService userService) {
+	public CommandLineRunner run(UserService userService, PasswordEncoder passwordEncoder) {
 		return args -> {
+			UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
+					.username("Test1")
+					.password("Test12345678")
+					.passwordEncoder(passwordEncoder::encode)
+					.build();
+
 			User user = new User();
-			user.setUsername("Test");
-			user.setPassword("Test12345678");
+			user.setUsername(userDetails.getUsername());
+			user.setPassword(userDetails.getPassword());
 			userService.createUser(user);
 		};
 	}

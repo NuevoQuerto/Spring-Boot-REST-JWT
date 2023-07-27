@@ -3,15 +3,17 @@ package com.dans.rest.util;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
 public class JwtUtil {
-    private static String SECRET_KEY = "ABCDEFGHIJ123";
+    private static SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
     public static String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -26,7 +28,7 @@ public class JwtUtil {
     }
 
     private static Claims extractAllClaims(String token) {
-        return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJwt(token).getBody();
+        return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
     }
 
     private static Boolean isTokenExpired(String token) {
